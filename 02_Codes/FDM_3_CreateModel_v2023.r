@@ -22,7 +22,6 @@ FD_ppp = as.ppp(FD_spoints)
 
 
 #Extract data in order to exclude points with NA values in the covariates.
-#Otherwise creating the model could throw an error.
 ExtrTab = as.data.frame(x=1:nrow(FD_sp), stringsAsFactors = FALSE)
 
 for (i in 1:length(P_PredNames)){
@@ -35,14 +34,12 @@ FD = st_as_sf(FD_sp)
 FD$Stock = NULL
 FD_ppp = as.ppp(FD)
 
-# # load country data border   (use "window_border.R" to create border files)
+# # load country data border 
 win_border_sf = st_read(P_WindowFolder_Train)
 win_border_sf = st_transform(win_border_sf, crs=P_CRS_Model)
 win_border = as.owin(as_Spatial(win_border_sf))
 Window(FD_ppp) = win_border
 
-#Calculate Linhom stat
-#Linhom_stat = Linhom(FD_ppp, correction = "non")
 
 # Read the predictor rasters as image objects	
 for (i in 1:length(P_PredNames)){
