@@ -1,5 +1,5 @@
 ###################################################################
-## FDM model file India
+## Master script - for FDM 
 ###################################################################
 #
 ###################################################################
@@ -16,13 +16,13 @@ P_AdmCode_train = "BGD" # "BGD" or "IN.GJ" or "THA"
 # Code for country to apply model - simulate farm pattern.
 	P_AdmCode_pred = "BGD" # "BGD" or "IN.GJ" or "THA"
 
-# Farm data used for training model 
+
+# Farm data used for training model (LGCP)
 	P_FarmFile = paste( "01_Data/01_Farm distribution/02_Processed data/",type_farm,"_",P_AdmCode_train,"/FarmData_train.shp", sep="") 
+
 # Column with stock number in farm data file
 	P_StockColumn = "Stock" 
-# Extent of study area, both for training data and predictions - c(minX, maxX, minY, maxY)
-	P_Extent = c(66, 109, 4, 37) ## BGD, Gujarat and Thailand are within this area
-  
+
 	# CRS for geographic coordinates
 	CRS_latlon = "+proj=longlat +datum=WGS84 +no_defs"
 	# Projected coordinate system used for model data
@@ -36,40 +36,37 @@ P_AdmCode_train = "BGD" # "BGD" or "IN.GJ" or "THA"
 	#P_ModelLevel = "Country"
 
 ###################################################################
-## General Settings
+## General Settings - LGCP model 
 ###################################################################
 
-# window borders of training area 
+# window borders of area for training and area for simulation
 	P_WindowFolder_Train = paste0("01_Data/01_Farm distribution/02_Processed data/",type_farm,"_",P_AdmCode_train,"/win_border.shp")
-	
-	
-	##### OPTIONNEL POUR LE MOMENT
-# Shapefile containing country borders
-	P_CountryShape = "01_Data/03_Admin Borders/ne_50m_admin_0_countries_lakes.shp"
-# Column in the country border file that has the country code
-	P_CodeColumn = "adm0_a3"
-# Shapefile containing provinces
-	P_ProvinceShape = "01_Data/03_Admin Borders/gadm28_adm1.shp"
-# Column in the province border file that has the country code
-	P_CodeColumn2 = "ISO"
-	# Column in the province border file that has the province code	
-	P_CodeColumn3 = "HASC_1"
-	
-	
+	P_WindowFolder_Sim = paste0("01_Data/01_Farm distribution/02_Processed data/",type_farm,"_",P_AdmCode_pred,"/win_border.shp")
 	
 # Directory containing the predictor raster files
 	P_PredictorFolder = "01_Data/02_Predictors"
 
+# number of simulations 
+nSim = 99
+P_nFarms = NA               # adjust the number of farms of simulated spatial points patterns (optional) - NA by default
 
 #Covariates used in the analysis and their corresponding paths to global rasters
 P_PredNames = c("Hpop","Crop","Tree","Access_MC1","Access_MC11","Access_MC2","Access_Port12","Proxim_roads","Slope","nChicken")
-P_PredNames = c("Hpop","Tree","Proxim_roads","Slope","nChicken")
 
-#	random forest parameters 
+P_MinStock = 500  # minimum 500 chickens/farm 
+
+###################################################################
+## Random Forest parameters - size farm modelling
+###################################################################
+
+# random forest parameters - size farm modelling
 # Buffer distance around farms for which to extract covariate data
-	P_BufferDist = 5000 #in meters
+P_BufferDist = 5000 #in meters
 
-	P_MinStock = 500  # minimum 500 chickens/farm 
+
+
+# List of countries to train the Random Forest model (farm size) ; select all countries or some specific country
+list_country_RF = c("BGD", "THA","IN.GJ")
 	
 ###################################################################################
 ###               FOLDER TO SAVE RESULTS / OUPUTS etc
@@ -78,6 +75,7 @@ P_PredNames = c("Hpop","Tree","Proxim_roads","Slope","nChicken")
 	P_SaveSimulFolder = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/02_Simulations")
 	P_SaveEnvFolder   = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/03_Envelope") 
 	P_SaveQuadFolder  = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/04_QuadratCountTest") 
+	P_SaveSizeFarmFolder = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/05_SizeFarm")
 	
 	
 	
@@ -90,16 +88,16 @@ source("02_Codes/FDM_1_Libraries.r")
 print(Sys.time() - start_time)
 
 
-source("01_Codes/FDM_3_CreateModel_v2023.r")
+source("01_Codes/FDM_2_CreateModel.r")
 print(Sys.time() - start_time)
 
-source(paste(P_GenPath, "01_Codes/FDM_4_SimulateFarmPattern.r", sep = ""))
+source(paste(P_GenPath, "01_Codes/FDM_3_SimulateFarmPattern.r", sep = ""))
 print(Sys.time() - start_time)
 
-source(paste(P_GenPath, "01_Codes/FDM_5_ExtractValues.r", sep = ""))
+source(paste(P_GenPath, "01_Codes/FDM_4_ExtractValues_forRFmodel.r", sep = ""))
 print(Sys.time() - start_time)
 
-source(paste(P_GenPath, "01_Codes/FDM_6_PredictFarmSizes.r", sep = ""))
+source(paste(P_GenPath, "01_Codes/FDM_5_Linhom_Envelope.r", sep = ""))
 print(Sys.time() - start_time)
 
 source(paste(P_GenPath, "01_Codes/FDM_7_AdjustFarmSizes.r", sep = ""))
