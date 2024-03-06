@@ -18,4 +18,6 @@ library(RandomFieldsUtils)
 library(RandomFields)
 library(ranger)
 library(gdalUtils)
-
+library(doParallel)
+library(ggplot2)
+library(foreach)
