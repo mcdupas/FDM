@@ -42,8 +42,7 @@ pppPath = paste(P_SaveSimulFolder,"/",type_farm, "_",P_AdmCode_pred,"_simulated_
 save(Sim_ppp, file = pppPath)
 
 
-rm(fit_kppm,Sim_ppplist,Sim_pp_sf)
-
+rm(fit_kppm,Sim_ppp)
 
 
 
