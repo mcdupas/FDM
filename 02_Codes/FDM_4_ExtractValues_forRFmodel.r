@@ -22,13 +22,14 @@ for (j in 1:length(list_country_RF){
 	names(Extr_train) = "Stock"
 
 	for (i in 1:length(P_PredNames)){
-	print(paste("## Extracting covariate", P_PredNames[i]))
-	flush.console()
-	extractval = exact_extract(raster(P_PredPaths[i]), FD_buf, fun=weighted.mean, na.rm=TRUE)
-	eval(parse(text=paste("Extr_train$", P_PredNames[i],"=extractval",sep="")))
+		print(paste("## Extracting covariate", P_PredNames[i]))
+		flush.console()
+		P_PredPath = paste(P_PredictorFolder,"/", P_PredNames[i], ".tif", sep="")
+		extractval = exactextractr::exact_extract(raster(P_PredPath), FD_buf, fun=weighted.mean, na.rm=TRUE)
+		eval(parse(text=paste("Extr_train$", P_PredNames[i],"=extractval",sep="")))
 	}
 	# Save data to disk
-	pExtractedVals = paste(P_SaveSizeFarmFolder,"/TrainData/",type_farm, "_", list_country_RF[j],"_ExtractTrain.csv",sep="")
+	pExtractedVals = paste(P_SaveSizeFarmFolder,"/01_TrainData/",type_farm, "_", list_country_RF[j],"_ExtractTrain.csv",sep="")
 	write.csv(Extr_train, file=pExtractedVals, row.names=FALSE)
 }	
 
