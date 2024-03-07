@@ -76,7 +76,7 @@ save(fit_kppm,file = kppmPath)
 
 
 #### coefs table 
-coefs = coef(summary(fit_kppm))
+coefs = fit_kppm$po$coef
 
 
 ### table initialization
@@ -84,7 +84,7 @@ imp_covar <- rep(0, length(P_PredNames))
 ### loop to calculate importance of covariate
 for (i in 1:length(P_PredNames)){
   text = "imp_covar[i] = log10(exp(max("
-  text = paste(text,P_PredNames[i],")*coefs[1+i,1])+1)",sep="")
+  text = paste(text,P_PredNames[i],")*coefs[1+i])+1)",sep="")
   eval(parse(text=text))
 }
 
