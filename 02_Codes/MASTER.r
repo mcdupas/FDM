@@ -1,5 +1,5 @@
 ###################################################################
-## Master script - for FDM 
+## Master script - for Farm Distribution Model 
 ###################################################################
 #
 ###################################################################
@@ -10,15 +10,16 @@
 setwd("C:/Users/Admin/Dropbox/OneHealthPoultry/Projects/01_FDM")
 
 # type of farms 
-type_farm = "Broiler"  # "Broiler" or "Layer"
+type_farm = "Layer"  # "Broiler" or "Layer"
 # Code for country used for training model
-P_AdmCode_train = "BGD" # "BGD" or "IN.GJ" or "THA"
+P_AdmCode_train = "IN.GJ" # "BGD" or "IN.GJ" or "THA"
 # Code for country to apply model - simulate farm pattern.
-	P_AdmCode_pred = "BGD" # "BGD" or "IN.GJ" or "THA"
+P_AdmCode_pred = "IN.GJ" # "BGD" or "IN.GJ" or "THA"
 
 
 # Farm data used for training model (LGCP)
 	P_FarmFile = paste( "01_Data/01_Farm distribution/02_Processed data/",type_farm,"_",P_AdmCode_train,"/FarmData_train.shp", sep="") 
+        P_FarmFile_pred = paste( "01_Data/01_Farm distribution/02_Processed data/",type_farm,"_",P_AdmCode_pred,"/FarmData_train.shp", sep="") 
 
 # Column with stock number in farm data file
 	P_StockColumn = "Stock" 
@@ -75,7 +76,7 @@ list_country_RF = c("BGD", "THA","IN.GJ")
 	P_SaveSimulFolder = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/02_Simulations")
 	P_SaveEnvFolder   = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/03_Envelope") 
 	P_SaveQuadFolder  = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/04_QuadratCountTest") 
-	P_SaveSizeFarmFolder = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/05_SizeFarm")
+	P_SaveSizeFarmFolder = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/02_FarmSize")
 	
 	
 	
@@ -100,7 +101,7 @@ print(Sys.time() - start_time)
 source(paste(P_GenPath, "01_Codes/FDM_5_Linhom_Envelope.r", sep = ""))
 print(Sys.time() - start_time)
 
-source(paste(P_GenPath, "01_Codes/FDM_7_AdjustFarmSizes.r", sep = ""))
+source(paste(P_GenPath, "01_Codes/FDM_6_Validation_quadra_kppm.r", sep = ""))
 print(Sys.time() - start_time)
 
 
