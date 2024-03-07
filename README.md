@@ -20,7 +20,7 @@ install.packages("raster"); library(raster)
 
 ## Data
 
-To run the workflow, users can test the model using Gujarat only. 
+To test the model, users can run the workflow using only Gujarat.
 
 The farm locations and size of Gujarat are located in the folder: "01/Data/01_Farm distribution". The data for Thailand and Bangladesh used in the paper are not published. 
 
