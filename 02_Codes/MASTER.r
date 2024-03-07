@@ -67,16 +67,16 @@ P_BufferDist = 5000 #in meters
 
 
 # List of countries to train the Random Forest model (farm size) ; select all countries or some specific country
-list_country_RF = c("BGD", "THA","IN.GJ")
+list_country_RF = c("IN.GJ")                     # in this tutorial, only Gujarat is selected, because data of Bangladesh and Thailand are not published. For selecting all countries, use this line: list_country_RF = c("IN.GJ", "THA", "BGD")
 	
 ###################################################################################
 ###               FOLDER TO SAVE RESULTS / OUPUTS etc
 ###################################################################################
-	P_SaveModelFolder = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/01_Models") 
-	P_SaveSimulFolder = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/02_Simulations")
-	P_SaveEnvFolder   = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/03_Envelope") 
-	P_SaveQuadFolder  = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/01_SPP/04_QuadratCountTest") 
-	P_SaveSizeFarmFolder = paste0("03_Results/", type_farm, "_",P_AdmCode_train, "/02_FarmSize")
+	P_SaveModelFolder = paste0("03_Results/01_SPP/", type_farm, "_",P_AdmCode_train, "/01_Models") 
+	P_SaveSimulFolder = paste0("03_Results/01_SPP/", type_farm, "_",P_AdmCode_train, "/02_Simulations")
+	P_SaveEnvFolder   = paste0("03_Results/01_SPP/", type_farm, "_",P_AdmCode_train, "/03_Envelope") 
+	P_SaveQuadFolder  = paste0("03_Results/01_SPP/", type_farm, "_",P_AdmCode_train, "/04_QuadratCountTest") 
+	P_SaveSizeFarmFolder = paste0("03_Results/02_FarmSize/")
 	
 	
 	
