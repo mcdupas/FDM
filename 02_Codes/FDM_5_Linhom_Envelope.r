@@ -10,11 +10,6 @@ P_Cores = 8
 edge_corr = "iso"
 
 
-#Load model from disk
-kppmPath = paste(P_SaveModelFolder,"/","model_LGCP.kppm", sep="")
-load(kppmPath)
-
-
 if (P_AdmCode_pred== "BGD"){
 r_dist = seq(0,80000,500)
 }
@@ -29,6 +24,8 @@ r_dist = seq(0,140000,500)
 
 
 ### load simulations and model
+kppmPath = paste(P_SaveModelFolder,"/","model_LGCP.kppm", sep="")
+load(kppmPath)
 pppPath = paste(P_SaveSimulFolder,"/",type_farm, "_",P_AdmCode_pred,"_simulated_SPP.ppp", sep="")
 load(pppPath)
 
