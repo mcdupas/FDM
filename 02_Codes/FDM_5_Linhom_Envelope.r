@@ -14,7 +14,7 @@ if (P_AdmCode_pred== "BGD"){
 r_dist = seq(0,80000,500)
 }
 
-if (P_AdmCode_pred]== "THA"){
+if (P_AdmCode_pred== "THA"){
 r_dist = seq(0,235000,500)
 }
 
