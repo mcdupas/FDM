@@ -1,10 +1,5 @@
-print("# -------------------------------------------------------------------")
-print("#           Training random forest model                             ")
-print("# -------------------------------------------------------------------")
-
 import pandas as pd
 import numpy as np
-from matplotlib import pyplot
 import matplotlib.pyplot as plt
 
 import scipy
@@ -14,10 +9,6 @@ import os
 import pickle
 
 ###### sklearn (machine learning package)
-import sklearn
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_selection import SelectFromModel
-from sklearn.datasets import make_classification
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import RobustScaler
@@ -31,10 +22,16 @@ from mpl_toolkits.axes_grid.inset_locator import inset_axes
 
 from scipy.stats import gaussian_kde
 
+# function to ensure directory exists
 def ensure_dir(f):
     d = os.path.dirname(f)
     if not os.path.exists(d):
         os.makedirs(d)
+
+print("# -------------------------------------------------------------------")
+print("#           Training random forest model                             ")
+print("# -------------------------------------------------------------------")
+
 
 ## change directory path 
 os.chdir("C:/Users/Admin/Dropbox/OneHealthPoultry/Projects/01_FDM")
