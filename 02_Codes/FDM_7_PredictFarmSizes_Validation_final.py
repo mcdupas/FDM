@@ -33,8 +33,6 @@ print("#           Training random forest model                             ")
 print("# -------------------------------------------------------------------")
 
 
-print("Hello wrold!")
-
 ## change directory path 
 os.chdir("C:/Users/Admin/Dropbox/OneHealthPoultry/Projects/01_FDM")
 
