@@ -1,31 +1,21 @@
+import os
+import pickle
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-
 import scipy
 from scipy import stats
-
-import os
-import pickle
-
 ###### sklearn (machine learning package)
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import RobustScaler
-from sklearn.preprocessing import PowerTransformer
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_squared_error
-from sklearn.model_selection import cross_val_score
-
-#### graphics function
-from mpl_toolkits.axes_grid.inset_locator import inset_axes
-
 from scipy.stats import gaussian_kde
 
 # function to ensure directory exists
-def ensure_dir(f):
+def ensure_dir (f) :
     d = os.path.dirname(f)
-    if not os.path.exists(d):
+    if not os.path.exists(d) :
         os.makedirs(d)
 
 print("# -------------------------------------------------------------------")
@@ -33,64 +23,62 @@ print("#           Training random forest model                             ")
 print("# -------------------------------------------------------------------")
 
 
-## change directory path 
+## change directory path
 os.chdir("C:/Users/Admin/Dropbox/OneHealthPoultry/Projects/01_FDM")
 
-# This script trains a random forest model to predict farm stock size based on the extracted covariate values. The model is then applied on the simulated farms.
+# This script trains a random forest model to predict farm stock size based on the
+# extracted covariate values. The model is then applied on the simulated farms.
 
-P_Split = True    ## split the data (75% train and 25% test)
-P_RF_transform = "PowerTransformer"
-      
+SPLIT = True    ## split the data (75% train and 25% test)
+RF_TRANSFORM = "PowerTransformer"
+
 ## select farm training data
-P_Model_Code = [ "Layer_IN.GJ"]
+model_code = [ "Broiler_BGD"]
 
-P_Model_Name = P_Model_Code[0]
-if len(P_Model_Code) != 1 : 
-    for j in range(1,len(P_Model_Code)) : 
-        P_Model_Name = P_Model_Name +"_"+ P_Model_Code[j]
-        
+MODEL_NAME = model_code[0]
+if len(model_code) != 1 :
+    for j in range(1,len(model_code)) :
+        MODEL_NAME = MODEL_NAME +"_"+ model_code[j]
+
+
 ### outpufolder
-P_SaveSizeFarmFolder = "03_Results/02_FarmSize"
-P_OutputFolder = "03_Results/02_FarmSize/02_Outputs/"+P_Model_Name+"/"
-ensure_dir(P_OutputFolder)
+SAVE_SIZE_FARM_FOLDER = "03_Results/02_FarmSize"
+OUTPUT_FOLDER = "03_Results/02_FarmSize/02_Outputs/" + MODEL_NAME + "/"
+ensure_dir(OUTPUT_FOLDER)
 
-P_BufferDist = 5000
+BUFFER_DISTANCE = 5000
 
 # Read farm training data
-pExtractedVals = P_SaveSizeFarmFolder + "/01_TrainData/"+ P_Model_Code[0] + "_ExtractTrain.csv"
-Extr_train = pd.read_csv(pExtractedVals)
-Extr_train = Extr_train.dropna()
+EXTRACTED_VALS_FILE = SAVE_SIZE_FARM_FOLDER + "/01_TrainData/"+ model_code[0] + "_ExtractTrain.csv"
+extr_train = pd.read_csv(EXTRACTED_VALS_FILE )
+extr_train = extr_train.dropna()
 
-if len(P_Model_Code) != 1 : 
-    for j in range(1,len(P_Model_Code)) : 
-        pExtractedVals =  P_SaveSizeFarmFolder + "/01_TrainData/"+ P_Model_Code[j] + "_ExtractTrain.csv"
-        Extr_train_add = pd.read_csv(pExtractedVals)
-        Extr_train = pd.concat([Extr_train, Extr_train_add])
-        
-Extr_train = Extr_train.dropna()
+if len(model_code) != 1 :
+    for j in range(1,len(model_code)) :
+        EXTRACTED_VALS_FILE  =  SAVE_SIZE_FARM_FOLDER + "/01_TrainData/" + model_code[j] + "_ExtractTrain.csv"
+        extr_train_add = pd.read_csv(EXTRACTED_VALS_FILE )
+        extr_train = pd.concat([extr_train, extr_train_add])
+
+extr_train = extr_train.dropna()
 
 
 
 ## _____________________SCALE LABELS_____________________### 
 # Labels are the values we want to predict
-if P_RF_transform =="Log" : 
-    labels = np.log10(np.array(Extr_train['Stock']))
+if RF_TRANSFORM =="Log" :
+    labels = np.log10(np.array(extr_train['Stock']))
 # perform a robust scaler transform of the dataset
-if P_RF_transform =="RobustScalar" :
-    labels = np.array(Extr_train['Stock'])
+if RF_TRANSFORM =="RobustScalar" :
+    labels = np.array(extr_train['Stock'])
     labels = labels.reshape(-1,1)
     scaler_label = RobustScaler().fit(labels)
     labels = scaler_label.fit_transform(labels)
     labels = labels.ravel()
 
-if P_RF_transform == "PowerTransformer" : 
-    labels = np.array(Extr_train['Stock'])
+if RF_TRANSFORM == "PowerTransformer" : 
+    labels = np.array(extr_train['Stock'])
     lambda_ = scipy.stats.boxcox_normmax(labels, brack=(-1.9, 2.0),  method='mle')
     labels = (labels**lambda_ - 1) / lambda_
-    #labels = labels.reshape(-1,1)
-    #scaler_label = PowerTransformer(method='box-cox', lambdas_=[lmax], standardize=False).fit((labels))  #method='box-cox'
-    #labels = scaler_label.fit_transform((labels))
-    #labels = labels.ravel()
 
 ## _____________________END SCALE LABELS_____________________### 
 
@@ -98,7 +86,7 @@ if P_RF_transform == "PowerTransformer" :
 ## _____________________SCALE FEATURES _____________________### 
 # Remove the labels from the features
 # axis 1 refers to the columns
-features = Extr_train.drop('Stock', axis = 1)
+features = extr_train.drop('Stock', axis = 1)
 
 # Saving feature names for later use
 feature_list = list(features.columns)
@@ -111,13 +99,14 @@ scaler_features = StandardScaler().fit(features)
 
 # To scale data
 features = scaler_features.fit_transform(features)
+
 ## _____________________END SCALE FEATURES _____________________### 
 
 
 
 
 # Split the data into training and testing sets
-if P_Split : 
+if SPLIT :
     train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 42)
 else : 
     train_features = features
