@@ -3,7 +3,8 @@
 ## Prepare farm data and create model
 ###################################################################
 
-# This script pre-processes point and polygon data, and then creates a kppm model.
+# This script pre-processes point and polygon data, 
+# and then creates a kppm model.
 
 print("# -------------------------------------------------------------------")
 print("#                   Creating model                                   ")
