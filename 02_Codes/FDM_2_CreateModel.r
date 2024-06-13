@@ -16,9 +16,7 @@ FD = st_read(P_FarmFile, stringsAsFactors = FALSE)
 FD = st_transform(FD, crs=P_CRS_Model)    
 
 #Change to ppp format used by the spatstat package
-FD_sp = as(FD, "Spatial")
-FD_spoints = as(FD_sp, 'SpatialPoints')
-FD_ppp = as.ppp(FD_spoints)
+FD_ppp = as.ppp(FD)
 
 
 #Extract data in order to exclude points with NA values in the covariates.

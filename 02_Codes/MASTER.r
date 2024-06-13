@@ -10,11 +10,11 @@
 setwd("C:/Users/Admin/Dropbox/OneHealthPoultry/Projects/01_FDM")
 
 # type of farms 
-type_farm = "Layer"  # "Broiler" or "Layer"
+type_farm = "Broiler"  # "Broiler" or "Layer"
 # Code for country used for training model
-P_AdmCode_train = "IN.GJ" # "BGD" or "IN.GJ" or "THA"
+P_AdmCode_train = "BGD" # "BGD" or "IN.GJ" or "THA"
 # Code for country to apply model - simulate farm pattern.
-P_AdmCode_pred = "IN.GJ" # "BGD" or "IN.GJ" or "THA"
+P_AdmCode_pred = "BGD" # "BGD" or "IN.GJ" or "THA"
 
 
 # Farm data used for training model (LGCP)
