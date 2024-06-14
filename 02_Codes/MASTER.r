@@ -82,7 +82,7 @@ buffer_distance <- 5000 #in meters
 # select all countries or some specific country
 # in this tutorial, only Gujarat is selected,
 # because data of Bangladesh and Thailand are not published.
-list_country_rf <- c("IN.GJ")
+list_country_rf <- c("Broiler_BGD")
 
 
 ######################################################################
@@ -113,7 +113,7 @@ print(Sys.time() - start_time)
 source(paste(P_GenPath, "01_Codes/FDM_3_SimulateFarmPattern.r", sep = ""))
 print(Sys.time() - start_time)
 
-source(paste(P_GenPath, "01_Codes/FDM_4_ExtractValues_forRFmodel.r", sep = ""))
+source(paste(P_GenPath, "01_Codes/fdm_4_extract_pred_val_for_rf.R", sep = ""))
 print(Sys.time() - start_time)
 
 source(paste(P_GenPath, "01_Codes/FDM_5_Linhom_Envelope.r", sep = ""))
