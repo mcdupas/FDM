@@ -17,6 +17,14 @@ from sklearn.preprocessing import StandardScaler
 
 # function to ensure directory exists
 def ensure_dir (f):
+    """
+    Ensures that the directory for the given file path exists.
+    
+    Parameters:
+    f (str): The file path for which the directory should be checked/created.
+    
+    If the directory does not exist, it will be created.
+    """
     d = os.path.dirname(f)
     if not os.path.exists(d):
         os.makedirs(d)
