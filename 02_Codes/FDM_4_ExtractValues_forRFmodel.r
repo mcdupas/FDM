@@ -4,34 +4,34 @@ print("#           Extracting predictor values for farms                    ")
 print("# -------------------------------------------------------------------")
 flush.console()
 
-# This script extracts covariate values for both training farms and simulated farms. Covariate values are extracted from a round buffer zone around each farm.
+# This script extracts covariate values for both training farms
+# and simulated farms.
+# Covariate values are extracted from a round buffer zone around each farm.
 
 
 # Extract covariate values for training data
-for (j in 1:length(list_country_RF){
-	# Read farm training data
-	P_FarmFile = paste( "01_Data/01_Farm distribution/02_Processed data/",type_farm,"_", list_country_RF[j],"/FarmData_train.shp", sep="") 
-	FarmData_train = st_read(P_FarmFile, stringsAsFactors = FALSE)
-	
-	# Create buffer around farms 
-	FD_buf = st_buffer(FarmData_train, dist=P_BufferDist, endCapStyle = "ROUND", joinStyle = "ROUND", mitreLimit = 1)
-	FD_buf = st_transform(FD_buf, crs=CRS_latlon)
+for (j in seq_along(list_country_RF)) {
+  # Read farm training data
+  farm_data_train <- st_read(farm_file_train, stringsAsFactors = FALSE)
+  # Create buffer around farms
+  FD_buf <- st_buffer(FarmData_train, dist=P_BufferDist, endCapStyle = "ROUND", joinStyle = "ROUND", mitreLimit = 1)
+  FD_buf <- st_transform(FD_buf, crs=CRS_latlon)
 
-	# Create dataframe for storing extracted values
-	Extr_train = as.data.frame(FarmData_train$Stock, stringsAsFactors = FALSE)
-	names(Extr_train) = "Stock"
+  # Create dataframe for storing extracted values
+  Extr_train = as.data.frame(FarmData_train$Stock, stringsAsFactors = FALSE)
+  names(Extr_train) = "Stock"
 
-	for (i in 1:length(P_PredNames)){
-		print(paste("## Extracting covariate", P_PredNames[i]))
-		flush.console()
-		P_PredPath = paste(P_PredictorFolder,"/", P_PredNames[i], ".tif", sep="")
-		extractval = exactextractr::exact_extract(raster(P_PredPath), FD_buf, fun=weighted.mean, na.rm=TRUE)
-		eval(parse(text=paste("Extr_train$", P_PredNames[i],"=extractval",sep="")))
-	}
-	# Save data to disk
-	pExtractedVals = paste(P_SaveSizeFarmFolder,"/01_TrainData/",type_farm, "_", list_country_RF[j],"_ExtractTrain.csv",sep="")
-	write.csv(Extr_train, file=pExtractedVals, row.names=FALSE)
-}	
+  for (i in 1:length(P_PredNames)){
+    print(paste("## Extracting covariate", P_PredNames[i]))
+    flush.console()
+    P_PredPath = paste(P_PredictorFolder,"/", P_PredNames[i], ".tif", sep="")
+	extractval = exactextractr::exact_extract(raster(P_PredPath), FD_buf, fun=weighted.mean, na.rm=TRUE)
+	eval(parse(text=paste("Extr_train$", P_PredNames[i],"=extractval",sep="")))
+  }
+  # Save data to disk
+  pExtractedVals = paste(P_SaveSizeFarmFolder,"/01_TrainData/",type_farm, "_", list_country_RF[j],"_ExtractTrain.csv",sep="")
+  write.csv(Extr_train, file=pExtractedVals, row.names=FALSE)
+}
 
 
 
