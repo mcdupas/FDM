@@ -1,4 +1,5 @@
 """Module providing a function printing python version."""
+
 import os
 import pickle
 import pandas as pd
@@ -16,14 +17,11 @@ from sklearn.preprocessing import StandardScaler
 
 
 # function to ensure directory exists
-def ensure_dir (f):
-    """
-    Ensures that the directory for the given file path exists.
-    
-    Parameters:
-    f (str): The file path for which the directory should be checked/created.
-    
+def ensure_dir(f):
+    """Function to ensure directory exists.
     If the directory does not exist, it will be created.
+    Args:   f(str): directory path
+    Returns: None
     """
     d = os.path.dirname(f)
     if not os.path.exists(d):
@@ -299,9 +297,7 @@ for i in range(N_SIM):
 dataframe = pd.DataFrame(
     {"pearson": pearson_list, "accuracy": accuracy_list, "spearman": spearman_list}
 )
-dataframe.to_csv(
-    OUTPUT_FOLDER + "/internal_validation" + "_" + RF_TRANSFORM + ".csv"
-)
+dataframe.to_csv(OUTPUT_FOLDER + "/internal_validation" + "_" + RF_TRANSFORM + ".csv")
 
 
 # plot density histogram
@@ -350,7 +346,7 @@ spearman_list = []
 pearson_list = []
 rsquared_list = []
 
-for ii, unique_code_sim in enumerate(list_code_sim) :
+for ii, unique_code_sim in enumerate(list_code_sim):
     # Read farm training data
     EXTRACTED_VALS_FILE = (
         SAVE_SIZE_FARM_FOLDER + "/01_TrainData/" + unique_code_sim + "_ExtractTrain.csv"
@@ -455,6 +451,4 @@ dataframe = pd.DataFrame(
         "rsquared": rsquared_list,
     }
 )
-dataframe.to_csv(
-    OUTPUT_FOLDER + "/external_validation" + "_" + RF_TRANSFORM + ".csv"
-)
+dataframe.to_csv(OUTPUT_FOLDER + "/external_validation" + "_" + RF_TRANSFORM + ".csv")
