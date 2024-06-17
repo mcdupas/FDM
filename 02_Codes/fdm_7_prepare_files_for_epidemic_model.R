@@ -73,4 +73,3 @@ for (i in seq_along(combinations$scale_factor)) {
 
   }
 }
-
