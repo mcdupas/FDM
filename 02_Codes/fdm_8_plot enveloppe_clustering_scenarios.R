@@ -56,7 +56,7 @@ combinations <- rbind(combinations_scale, combinations_variance)
 
 # personalisation of plot
 color <- c("blue", "grey", "red")
-
+alpha_list <- c(0.4, 1.0, 0.4)
 theme_ggplot <- theme(axis.title = element_text(size = 20, colour = "black"),
                       text = element_text(size = 18, colour = "black"),
                       axis.text.y = element_text(colour = "black"),
@@ -89,6 +89,18 @@ for (i in seq_along(unique(combinations$Cluster_param))){
          x = "r",
          y = "Linhom") + theme_ggplot
 
+  p_env <- ggplot(linhom_obs, aes(x = r, y = un)) +
+    geom_line(color = "black") +
+    labs(title = "Linhom function of observed pattern",
+         x = "r",
+         y = "Linhom") + theme_ggplot
+
+  p_env_r <- ggplot(linhom_obs, aes(x = r, y = un - r)) +
+    geom_line(color = "black") +
+    labs(title = "Linhom function of observed pattern",
+         x = "r",
+         y = "Linhom - r") + theme_ggplot
+
 
   # loop over the unique combinations
   for (j in seq_along(combinations_temp$scale_factor)) {
@@ -103,35 +115,57 @@ for (i in seq_along(unique(combinations$Cluster_param))){
 
     # calculate the envelope for the simulation with Linhom function
     registerDoParallel(cores = nb_cores)
-    env <- foreach(k = 1:100, .combine = cbind,
-                   .packages = "spatstat") %dopar% {
+    linhom_simulations <- foreach(k = 1:100, .combine = cbind,
+                                  .packages = "spatstat") %dopar% {
       Linhom(simulated_ppp_new[[k]],
              correction = edge_corr, r = r_dist)[[3]]
     }
 
-    # plot linhom functions of each points pattern (all columns of env2)
-    env_df <- as.data.frame(env)
+    env <- global_envelope_test(
+      create_curve_set(
+        list(
+          "r" = r_dist,
+          "obs" = linhom_obs$un,
+          "sim_m" = linhom_simulations
+        )
+      ),
+      type = "erl", alpha = 0.05
+    )
 
-    env_mutated <- env_df %>%
+
+    # plot linhom functions of each points pattern (all columns of env2)
+    linhom_simulations_df <- as.data.frame(linhom_simulations)
+
+    linhom_simulations_mutated <- linhom_simulations_df %>%
       mutate(row = r_dist)
 
     # Reshape data to long format
-    env_long <- env_mutated %>%
+    linhom_simulations_long <- linhom_simulations_mutated %>%
       pivot_longer(cols = starts_with("result"),
                    names_to = "variable",
                    values_to = "value")
-    env_long$value_r <- env_long$value - env_long$row
+    linhom_simulations_long$value_r <- linhom_simulations_long$value -
+      linhom_simulations_long$row
 
     # Plot using ggplot2
     p_r <- p_r +
-      geom_line(data = env_long, aes(x = row, y = value_r,
-                                     group = variable),
-                color = color[j], alpha = 0.2)
+      geom_line(
+        data = linhom_simulations_long, aes(
+          x = row, y = value_r,
+          group = variable
+        ),
+        color = color[j], alpha = alpha_list[j]
+      )
 
     p <- p +
-      geom_line(data = env_long, aes(x = row, y = value, group = variable),
-                color = color[j], alpha = 0.2)
-
+      geom_line(
+        data = linhom_simulations_long,
+        aes(x = row,
+            y = value,
+            group = variable),
+        color = color[j],
+        alpha = alpha_list[j]
+      )
 
   }
 
