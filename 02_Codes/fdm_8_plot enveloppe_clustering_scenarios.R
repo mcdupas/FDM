@@ -56,7 +56,8 @@ combinations <- rbind(combinations_scale, combinations_variance)
 
 # personalisation of plot
 color <- c("blue", "grey", "red")
-alpha_list <- c(0.4, 1.0, 0.4)
+color <- c("#d703f3", "#838383", "#699217")
+alpha_list <- c(0.3, 0.3, 0.3)
 theme_ggplot <- theme(axis.title = element_text(size = 20, colour = "black"),
                       text = element_text(size = 18, colour = "black"),
                       axis.text.y = element_text(colour = "black"),
@@ -77,50 +78,75 @@ for (i in seq_along(unique(combinations$Cluster_param))){
   plot_name <- unique(combinations$Cluster_param)[i]
   combinations_temp <- combinations[combinations$Cluster_param == plot_name, ]
 
-  p_r <- ggplot(linhom_obs, aes(x = r, y = un - r)) +
-    geom_line(color = "black") +
+  p_r <- ggplot() +
+    geom_line(data = linhom_obs,
+              aes(x = r, y = un - r),
+              color = "black") +
     labs(title = "Linhom function of observed pattern",
          x = "r",
-         y = "Linhom - r") + theme_ggplot
+         y = "Linhom - r") +
+    theme_ggplot
 
-  p <- ggplot(linhom_obs, aes(x = r, y = un)) +
-    geom_line(color = "black") +
+  p <- ggplot() +
+    geom_line(data = linhom_obs,
+              aes(x = r, y = un),
+              color = "black") +
     labs(title = "Linhom function of observed pattern",
          x = "r",
-         y = "Linhom") + theme_ggplot
+         y = "Linhom") +
+    theme_ggplot
 
-  p_env <- ggplot(linhom_obs, aes(x = r, y = un)) +
-    geom_line(color = "black") +
-    labs(title = "Linhom function of observed pattern",
-         x = "r",
-         y = "Linhom") + theme_ggplot
+  p_env <- ggplot() +
+    theme_ggplot
 
-  p_env_r <- ggplot(linhom_obs, aes(x = r, y = un - r)) +
-    geom_line(color = "black") +
-    labs(title = "Linhom function of observed pattern",
-         x = "r",
-         y = "Linhom - r") + theme_ggplot
-
+  p_env_r <- ggplot() +
+    theme_ggplot
 
   # loop over the unique combinations
   for (j in seq_along(combinations_temp$scale_factor)) {
     comb <- combinations_temp[j, ]
 
-    # load simulated spp
-    spp_file <- paste0(simulation_folder, "Simu_fixed_var",
-                       comb$variance_factor, "_sc", comb$scale_factor,
-                       "/Simufixed_fit_kppm_var",
-                       comb$variance_factor, "_sc", comb$scale_factor, ".ppp")
-    load(spp_file)
+    # check if linhom functions of simulations are already calculated
+    linhom_simulations_file <- paste0(simulation_folder,
+                                       "Simu_fixed_var",
+                                       comb$variance_factor, "_sc",
+                                       comb$scale_factor,
+                                       "/linhom_simulations.csv")
+    if (file.exists(linhom_simulations_file)) {
+      linhom_simulations_df <- read.csv(linhom_simulations_file)
+      r_dist <- linhom_simulations_df$r_dist
+      linhom_simulations_df$r_dist <- NULL
+      linhom_simulations <- as.matrix(linhom_simulations_df)
 
-    # calculate the envelope for the simulation with Linhom function
-    registerDoParallel(cores = nb_cores)
-    linhom_simulations <- foreach(k = 1:100, .combine = cbind,
-                                  .packages = "spatstat") %dopar% {
-      Linhom(simulated_ppp_new[[k]],
-             correction = edge_corr, r = r_dist)[[3]]
+    } else {
+      # load simulated spp
+      spp_file <- paste0(simulation_folder, "Simu_fixed_var",
+                         comb$variance_factor, "_sc", comb$scale_factor,
+                         "/Simufixed_fit_kppm_var",
+                         comb$variance_factor, "_sc", comb$scale_factor, ".ppp")
+      load(spp_file)
+
+      # calculate the envelope for the simulation with Linhom function
+      registerDoParallel(cores = nb_cores)
+      linhom_simulations <- foreach(k = 1:100, .combine = cbind,
+                                    .packages = "spatstat") %dopar% {
+        Linhom(simulated_ppp_new[[k]],
+               correction = edge_corr, r = r_dist)[[3]]
+      }
+
+      # plot linhom functions of each points pattern (all columns of env2)
+      linhom_simulations_df <- as.data.frame(linhom_simulations)
+
+      # save linhom function in a csv file
+      linhom_simulations_df$r_dist <- r_dist
+      write.table(linhom_simulations_df,
+                  linhom_simulations_file,
+                  sep = ",",
+                  row.names = FALSE)
+
     }
 
+    # calculate envelope of the linhom functions of the simulations
     env <- global_envelope_test(
       create_curve_set(
         list(
@@ -132,14 +158,10 @@ for (i in seq_along(unique(combinations$Cluster_param))){
       type = "erl", alpha = 0.05
     )
 
-
-    # plot linhom functions of each points pattern (all columns of env2)
-    linhom_simulations_df <- as.data.frame(linhom_simulations)
-
     linhom_simulations_mutated <- linhom_simulations_df %>%
       mutate(row = r_dist)
 
-    # Reshape data to long format
+    # Reshape linhom functions data to long format
     linhom_simulations_long <- linhom_simulations_mutated %>%
       pivot_longer(cols = starts_with("result"),
                    names_to = "variable",
@@ -167,6 +189,64 @@ for (i in seq_along(unique(combinations$Cluster_param))){
         alpha = alpha_list[j]
       )
 
+    p_env <- p_env +
+      geom_ribbon(data = env,
+                  aes(x = r,
+                      ymin = lo,
+                      ymax = hi),
+                  fill = color[j],
+                  alpha = alpha_list[j]) +
+      geom_line(data = env,
+                aes(x = r, y = central),
+                linetype = "dashed",
+                color = color[j],
+                size = 2.0)
+
+
+    p_env_r <- p_env_r +
+      geom_ribbon(data = env,
+                  aes(x = r,
+                      ymin = lo - r,
+                      ymax = hi - r),
+                  fill = color[j],
+                  alpha = alpha_list[j]) +
+      geom_line(data = env,
+                aes(x = r, y = central - r),
+                linetype = "dashed",
+                color = color[j],
+                size = 1.0) +
+      geom_line(data = env,
+                aes(x = r, y = lo - r),
+                color = color[j],
+                size = 0.5) +
+      geom_line(data = env,
+                aes(x = r, y = hi - r),
+                color = color[j],
+                size = 0.5)
+
   }
+
+  p_env <- p_env +
+    geom_line(data = linhom_obs, aes(x = r, y = un), color = "black") +
+    labs(title = "Linhom function of observed pattern",
+         x = "r",
+         y = "Linhom")
+
+  p_env_r <- p_env_r +
+    geom_line(data = linhom_obs, aes(x = r, y = un - r), color = "black") +
+    labs(title = "Linhom function of observed pattern",
+         x = "r",
+         y = "Linhom - r")
+
+  # Save the plots
+  ggsave(p_env_r, filename = paste0("03_Results/01_SPP/",
+                                    model_code,
+                                    "/03_Envelope/scenario1/Envelope_linhom_r_",
+                                    plot_name,
+                                    ".png"),
+         width = 10,
+         height = 10,
+         units = "in",
+         dpi = 300)
 
 }
