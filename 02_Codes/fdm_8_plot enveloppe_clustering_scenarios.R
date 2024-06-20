@@ -53,11 +53,9 @@ combinations_variance$Cluster_param <- "variance"
 # combine the two dataframes
 combinations <- rbind(combinations_scale, combinations_variance)
 
-
 # personalisation of plot
-color <- c("blue", "grey", "red")
-color <- c("#d703f3", "#838383", "#699217")
-alpha_list <- c(0.3, 0.3, 0.3)
+color <- c("#d703f3", "#838383", "#79b500")
+alpha_list <- c(0.15, 0.4, 0.15)
 theme_ggplot <- theme(axis.title = element_text(size = 20, colour = "black"),
                       text = element_text(size = 18, colour = "black"),
                       axis.text.y = element_text(colour = "black"),
@@ -108,10 +106,11 @@ for (i in seq_along(unique(combinations$Cluster_param))){
 
     # check if linhom functions of simulations are already calculated
     linhom_simulations_file <- paste0(simulation_folder,
-                                       "Simu_fixed_var",
-                                       comb$variance_factor, "_sc",
-                                       comb$scale_factor,
-                                       "/linhom_simulations.csv")
+                                      "Simu_fixed_var",
+                                      comb$variance_factor,
+                                      "_sc",
+                                      comb$scale_factor,
+                                      "/linhom_simulations.csv")
     if (file.exists(linhom_simulations_file)) {
       linhom_simulations_df <- read.csv(linhom_simulations_file)
       r_dist <- linhom_simulations_df$r_dist
@@ -234,8 +233,7 @@ for (i in seq_along(unique(combinations$Cluster_param))){
 
   p_env_r <- p_env_r +
     geom_line(data = linhom_obs, aes(x = r, y = un - r), color = "black") +
-    labs(title = "Linhom function of observed pattern",
-         x = "r",
+    labs(x = "r",
          y = "Linhom - r")
 
   # Save the plots
@@ -243,9 +241,9 @@ for (i in seq_along(unique(combinations$Cluster_param))){
                                     model_code,
                                     "/03_Envelope/scenario1/Envelope_linhom_r_",
                                     plot_name,
-                                    ".png"),
-         width = 10,
-         height = 10,
+                                    ".pdf"),
+         width = 6,
+         height = 6,
          units = "in",
          dpi = 300)
 
