@@ -66,7 +66,7 @@ for (i in seq_len(long(length(P_PredNames)))) {
 }
 
 
-text <- paste(text, ", clusters = 'LGCP', method = 'palm')", sep = "")
+text <- paste(text, ", clusters = 'Thomas', method = 'palm')", sep = "")
 
 eval(parse(text = text))
 
