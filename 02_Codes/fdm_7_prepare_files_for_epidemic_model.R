@@ -6,7 +6,7 @@ setwd("C:/Users/Admin/Dropbox/OneHealthPoultry/Projects/01_FDM")
 # define the different level of clustering
 scale_factor_list <- c(0.5, 1, 2)
 variance_factor_list <- c(0.5, 1, 2)
-nsim <- 40
+nsim <- 100
 model_code <- "Broiler_BGD"
 
 

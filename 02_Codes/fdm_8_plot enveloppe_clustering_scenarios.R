@@ -236,6 +236,9 @@ for (i in seq_along(unique(combinations$Cluster_param))){
     labs(x = "r",
          y = "Linhom - r")
 
+  # add y lim to the plot between 0 and 22
+  p_env_r <- p_env_r + ylim(0, 21)
+
   # Save the plots
   ggsave(p_env_r, filename = paste0("03_Results/01_SPP/",
                                     model_code,
