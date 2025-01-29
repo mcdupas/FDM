@@ -29,7 +29,9 @@ for (j in seq_along(list_country_rf)) {
     print(paste("## Extracting covariate", pred_names[i]))
     flush.console()
     pred_path <- paste(predictor_folder, "/", pred_names[i], ".tif", sep = "")
-    extractval <- exactextractr::exact_extract(raster(pred_path), fd_buf,
+    r <- terra::rast(pred_path)
+    r <- terra::project(r, crs_model)
+    extractval <- exactextractr::exact_extract(r, fd_buf,
                                                fun = weighted.mean,
                                                na.rm = TRUE)
     eval(parse(text = paste("extr_train$", pred_names[i],

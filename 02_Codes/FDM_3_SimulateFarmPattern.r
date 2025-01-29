@@ -17,7 +17,7 @@ load(kppmpath)
 # # load country data border
 win_border_sf <- st_read(window_folder_sim)
 win_border_sf <- st_transform(win_border_sf, crs = crs_model)
-win_border <- as.owin(as_Spatial(win_border_sf))
+win_border <- as.owin(win_border_sf)
 
 sim_ppp <- simulate.kppm(fit_kppm, n_sim = n_sim + 1, window = win_border)
 
