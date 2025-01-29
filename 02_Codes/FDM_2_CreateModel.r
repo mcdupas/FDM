@@ -95,7 +95,7 @@ for (i in seq_len(length(pred_names))){
 
 #Form syntax for creating model and run it
 text <- "fit_kppm = kppm(fd_ppp, ~ "
-for (i in seq_len(long(length(pred_names)))) {
+for (i in seq_len(length(pred_names))) {
   text <- paste(text, pred_names[i], sep = "")
   if (i != length(pred_names)) {
     text <- paste(text, "+ ")
