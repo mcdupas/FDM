@@ -12,10 +12,15 @@ setwd("C:/Users/Admin/Dropbox/OneHealthPoultry/Projects/01_FDM")
 # type of farms
 type_farm <- "Broiler"  # "Broiler" or "Layer"
 # Code for country used for training model
-code_adm_train <- "BGD" # "BGD" or "IN.GJ" or "THA"
+code_adm_train <- "IN.GJ" # "BGD" or "IN.GJ" or "THA"
 # Code for country to apply model - simulate farm pattern.
-code_adm_sim <- "BGD" # "BGD" or "IN.GJ" or "THA"
+code_adm_sim <- "IN.GJ" # "BGD" or "IN.GJ" or "THA"
 
+# List of countries to train the Random Forest model (farm size) ;
+# select all countries or some specific country
+# in this tutorial, only Gujarat is selected,
+# because data of Bangladesh and Thailand are not published.
+list_country_rf <- c("Broiler_IN.GJ")
 
 # Farm data used for training model (LGCP)
 farm_file_train <- paste("01_Data/01_Farm distribution/02_Processed data/",
@@ -39,7 +44,7 @@ crs_model <- "+proj=utm +zone=45 +datum=WGS84 +units=m +no_defs"
 # Number of farms to simulate - if NA no adjustment for farm number will be made
 n_farms <- NA
 # Total stock in country to adjust to. If NA no adjustment will be made.
-total_stock <- NA						##L663300000
+total_stock <- NA               ##L663300000
 
 
 ###################################################################
@@ -78,11 +83,7 @@ buffer_distance <- 5000 #in meters
 
 
 
-# List of countries to train the Random Forest model (farm size) ;
-# select all countries or some specific country
-# in this tutorial, only Gujarat is selected,
-# because data of Bangladesh and Thailand are not published.
-list_country_rf <- c("Broiler_BGD")
+
 
 
 ######################################################################
